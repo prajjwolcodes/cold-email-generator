@@ -1,103 +1,176 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Loader2, Mail, TestTube, TestTubeIcon } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import { SendMail } from "@/utils/sendMail";
+
+export default function ColdEmailGenerator() {
+  const [recipientUrl, setRecipientUrl] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [generatedEmail, setGeneratedEmail] = useState("");
+  const [showEmail, setShowEmail] = useState(false);
+  const emailDisplayRef = useRef(null);
+  const formRef = useRef(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!recipientUrl || !fullName) {
+      return;
+    }
+
+    setIsLoading(true);
+    setShowEmail(false);
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url: recipientUrl, fullname: fullName }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to generate email");
+      }
+
+      const data = await res.json();
+      setGeneratedEmail(data.response);
+      setShowEmail(true);
+
+      setTimeout(() => {
+        emailDisplayRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-gray-100 text-gray-900">
+      {/* Navigation Bar */}
+      <Navbar />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      {/* Main Content */}
+      <main className="max-w-3xl mx-auto px-4 py-16 text-center">
+        <div className="mb-6">
+          <h2 className="text-emerald-500 font-medium uppercase tracking-wider mb-4">
+            WELCOME TO COLD EMAIL GENERATOR
+          </h2>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
+            Where cold outreach meets real-world results.
+          </h1>
+
+          {/* Testimonial */}
+          <div className="max-w-3xl mx-auto border border-gray-200 rounded-lg p-6 mb-12">
+            <div className="flex items-center gap-6">
+              <Mail className="h-12 w-12 text-emerald-500" />
+              <div className="text-left">
+                <p className="text-gray-800">
+                  I used to spend hours writing cold emails. This generator has
+                  saved me so much time while improving my response rates! All I need to provide is the job&apos;s website URL, and it crafts a personalized email that gets results.
+                </p>
+                <p className="text-gray-600 text-sm mt-2">
+                  Prajjwol Shrestha, Director at Tech Solutions
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Form */}
+          <form
+            ref={formRef}
+            onSubmit={handleSubmit}
+            className="max-w-3xl mx-auto mb-16"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <div className="flex flex-col gap-4 mb-4">
+              <Input
+                type="url"
+                placeholder="Job's Website URL"
+                value={recipientUrl}
+                onChange={(e) => setRecipientUrl(e.target.value)}
+                required
+                disabled={isLoading}
+                className="h-12 px-4 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
+              />
+              <Input
+                type="text"
+                placeholder="Your Full Name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+                disabled={isLoading}
+                className="h-12 px-4 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
+              />
+            </div>
+            <Button
+              type="submit"
+              disabled={isLoading || !recipientUrl || !fullName}
+              className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-md"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating Email...
+                </>
+              ) : (
+                "Generate Email"
+              )}
+            </Button>
+          </form>
         </div>
+
+        {/* Generated Email Display */}
+        {showEmail && generatedEmail && (
+          <div ref={emailDisplayRef} className="mt-16 text-left">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">
+              Your Generated Email
+            </h3>
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+              <pre className="whitespace-pre-wrap text-gray-800 font-mono text-sm leading-relaxed">
+                {generatedEmail}
+              </pre>
+            </div>
+            <div className="mt-6 flex gap-4">
+              <Button
+                onClick={() => navigator.clipboard.writeText(generatedEmail)}
+                variant="outline"
+                className="flex-1 border-emerald-500 text-emerald-500 hover:bg-emerald-50"
+              >
+                Copy to Clipboard
+              </Button>
+              <Button
+                onClick={() => {
+                  // Use the state variables which should now be correctly parsed
+                  setRecipientUrl("");
+                  setFullName("");
+                  setGeneratedEmail("");
+                  setShowEmail(false);
+
+                  setTimeout(() => {
+                    formRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }, 100);
+                }}
+                className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white"
+              >
+                Generate new Email
+              </Button>
+            </div>
+          </div>
+        )}
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }

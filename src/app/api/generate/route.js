@@ -48,7 +48,7 @@ ONLY return valid JSON output. Do not explain anything.
 `;
 
   const coldEmailTemplate = `
-You are {fullname}, a professional Full Stack Developer with experience in the MERN stack. Write a cold email applying for the following job. The tone should be professional, confident, and personalized—as if Prajjwol is writing it himself.
+You are {fullname}, a professional Full Stack Developer with experience in the MERN stack and Next.js. You are also linked with AI stuffs using langchain and groq. You are currently diving into GEN AI to make powerful AI integrated app. Write a cold email applying for the following job. The tone should be professional, confident, and personalized—as if Prajjwol is writing it himself.
 
 Use the following job details to tailor the message:
 
@@ -67,7 +67,7 @@ Subject: [Strong, relevant, and personalized subject line]
 
 Hi [Hiring Manager or Team at {company}],
 
-[Introduction: Who you are, where you're based, your current role or experience]
+[Introduction: Who you are, your current role or experience]
 
 [Why you're interested: Connect your interests/skills to their mission, responsibilities, or stack]
 
@@ -82,7 +82,7 @@ LinkedIn: https://www.linkedin.com/in/prajjwol-shrestha-078884321/
 GitHub: https://github.com/prajjwolcodes` : ''}
 ---
 
-Only return the full email content in the format shown. Do not explain anything.
+Only return the full email content in the format shown. Do not explain anything and do not write long paragraphs like essays that make the reader boring, make it clean, simple and professional.
 `;
 
   const scrapingPrompt = PromptTemplate.fromTemplate(scrapingTemplate);
@@ -112,8 +112,6 @@ Only return the full email content in the format shown. Do not explain anything.
   ]);
 
   const response = await chain.invoke({ content,fullname });
-
-  console.log(response);
 
   return Response.json({ response }, { status: 200 });
 }
