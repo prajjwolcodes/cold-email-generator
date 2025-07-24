@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Mail, TestTube, TestTubeIcon } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import { SendMail } from "@/utils/sendMail";
 
 export default function ColdEmailGenerator() {
   const [recipientUrl, setRecipientUrl] = useState("");
@@ -26,7 +25,7 @@ export default function ColdEmailGenerator() {
     setIsLoading(true);
     setShowEmail(false);
     try {
-      const res = await fetch("/api/generate", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL_PROD}/api/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,12 +60,12 @@ export default function ColdEmailGenerator() {
       <Navbar />
 
       {/* Main Content */}
-      <main className="max-w-3xl mx-auto px-4 py-16 text-center">
+      <main className="max-w-3xl  mx-auto px-4 py-8 md:py-16 text-center">
         <div className="mb-6">
           <h2 className="text-emerald-500 font-medium uppercase tracking-wider mb-4">
             WELCOME TO COLD EMAIL GENERATOR
           </h2>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
+          <h1 className="text-2xl md:text-5xl font-bold text-gray-900 mb-8">
             Where cold outreach meets real-world results.
           </h1>
 
@@ -75,10 +74,14 @@ export default function ColdEmailGenerator() {
             <div className="flex items-center gap-6">
               <Mail className="h-12 w-12 text-emerald-500" />
               <div className="text-left">
-                <p className="text-gray-800">
+                <div className="hidden md:flex text-gray-800">
                   I used to spend hours writing cold emails. This generator has
                   saved me so much time while improving my response rates! All I need to provide is the job&apos;s website URL, and it crafts a personalized email that gets results.
-                </p>
+                </div>
+                <div className="flex md:hidden text-gray-800">
+                  I used to spend hours writing cold emails. This generator has
+                  saved me so much time while improving my response rates!
+                </div>
                 <p className="text-gray-600 text-sm mt-2">
                   Prajjwol Shrestha, Director at Tech Solutions
                 </p>
