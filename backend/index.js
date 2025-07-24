@@ -2,6 +2,8 @@ import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
 import { generateController } from "./controller/generateController.js"
+import puppeteer from "puppeteer";
+
 
 
 dotenv.config()
@@ -13,6 +15,8 @@ app.use(
     limit: '5mb',
   })
 );
+
+
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
     origin: "*",

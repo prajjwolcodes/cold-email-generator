@@ -4,6 +4,8 @@ export async function WebScraper(url) {
   const loader = new PuppeteerWebBaseLoader(
     url,
     {
+       headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
       launchOptions: { headless: true },
       evaluate: (page) => page.evaluate(() => document.body.innerText)
     }
