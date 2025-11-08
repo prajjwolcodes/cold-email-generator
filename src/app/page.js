@@ -27,7 +27,7 @@ export default function ColdEmailGenerator() {
     setShowEmail(false);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL_DEV}/api/generate`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL_PROD}/api/generate`,
         {
           method: "POST",
           headers: {
