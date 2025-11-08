@@ -27,12 +27,18 @@ export async function WebScraper(url) {
 }
 
 export async function WebScraperController(req, res) {
-    const { url } = req.body();
-    if (!url) {
-        return res.json({ error: 'URL is required' }, { status: 400 });
-    }
-    const docs = await WebScraper(url);
+  const { url } = req.body; // <--- CHANGE req.body() to req.body
 
-    return res.json({docs}, { status: 200 });
+  if (!url) {
+    return res.status(400).json({ error: 'URL is required' }); // <--- CORRECT RESPONSE FORMAT
+  }
+
+  try {
+    const docs = await WebScraper(url);
+    return res.status(200).json({ docs });
+  } catch (error) {
+    console.error("Error during web scraping:", error);
+    return res.status(500).json({ error: 'Failed to scrape the URL', details: error.message });
+  }
 }
 

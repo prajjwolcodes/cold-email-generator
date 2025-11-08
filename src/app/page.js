@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Mail, TestTube, TestTubeIcon } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import toast from "react-hot-toast";
 
 export default function ColdEmailGenerator() {
   const [recipientUrl, setRecipientUrl] = useState("");
@@ -25,13 +26,16 @@ export default function ColdEmailGenerator() {
     setIsLoading(true);
     setShowEmail(false);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL_PROD}/api/generate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ url: recipientUrl, fullname: fullName }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL_DEV}/api/generate`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url: recipientUrl, fullname: fullName }),
+        }
+      );
 
       if (!res.ok) {
         throw new Error("Failed to generate email");
@@ -54,6 +58,13 @@ export default function ColdEmailGenerator() {
     }
   };
 
+  useEffect(() => {
+    toast.loading(
+      "The backend server is hosted on render and may take a while to wake up. Please be patient!",
+      { duration: 4000 }
+    );
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900">
       {/* Navigation Bar */}
@@ -66,7 +77,7 @@ export default function ColdEmailGenerator() {
             WELCOME TO COLD EMAIL GENERATOR
           </h2>
           <h1 className="text-2xl md:text-5xl font-bold text-gray-900 mb-8">
-            Where cold outreach meets real-world results.
+            Enter job link, get personalized cold email
           </h1>
 
           {/* Testimonial */}
@@ -76,7 +87,9 @@ export default function ColdEmailGenerator() {
               <div className="text-left">
                 <div className="hidden md:flex text-gray-800">
                   I used to spend hours writing cold emails. This generator has
-                  saved me so much time while improving my response rates! All I need to provide is the job&apos;s website URL, and it crafts a personalized email that gets results.
+                  saved me so much time while improving my response rates! All I
+                  need to provide is the job&apos;s website URL, and it crafts a
+                  personalized email that gets results.
                 </div>
                 <div className="flex md:hidden text-gray-800">
                   I used to spend hours writing cold emails. This generator has
